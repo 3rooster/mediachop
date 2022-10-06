@@ -1,0 +1,11 @@
+env:
+  mode: dev
+logger:
+  level: info
+  development: true
+  outputPaths: # log output
+    - log/chop.log
+  errorOutputPaths: # only for zap internal error logs
+    - log/zap.log
+mediaServer:
+  listenPort: 8080
