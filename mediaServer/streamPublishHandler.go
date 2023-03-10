@@ -3,6 +3,7 @@ package mediaServer
 import (
 	"go.uber.org/zap"
 	"io"
+	"mediachop/helpers/tm"
 	"mediachop/service/cost"
 	"net/http"
 )
@@ -23,6 +24,10 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo) {
 		return
 	}
 	mf.Content = content
+	mf.PublishedDateTimeMs = tm.UnixMillionSeconds()
+	mf.PublishedDateTime = tm.NowDateTime()
+	mf.PublishCostMs = mf.PublishedDateTimeMs - mf.RcvDateTimeMs
+
 	cache.Set(mf.CacheKey(), mf)
 	logger.With(zap.Int64("cost", cs.CostMs()),
 		zap.Int("bytes", len(content))).
