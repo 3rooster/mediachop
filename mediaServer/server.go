@@ -20,11 +20,13 @@ func Start(srvCfg *config.MediaServerConfig) {
 
 // handles get requests.
 func streamHandler(w http.ResponseWriter, r *http.Request) {
+	logger := zap.L().With(zap.String("method", r.Method),
+		zap.String("path", r.URL.String()))
 	event, stream, fileName, err := parseStreamInfoFromPath(r.URL.Path)
 	if err != nil {
 		w.WriteHeader(401)
 		w.Write([]byte("path not support"))
-		zap.L().Error("path not support")
+		logger.Error("path not support")
 		return
 	}
 	mf := &mediaFileInfo{
