@@ -2,6 +2,7 @@ package mediaServer
 
 import (
 	"go.uber.org/zap"
+	"mediachop/helpers/tm"
 	"mediachop/service/cost"
 	"net/http"
 	"strconv"
@@ -24,6 +25,7 @@ func playStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo) {
 	cachedMf := cachedData.(*mediaFileInfo)
 	w.Header().Set("Ext-Publish-Time", strconv.FormatInt(cachedMf.RcvDateTimeMs, 10))
 	w.Header().Set("Ext-Publish-Date", cachedMf.RcvDateTime)
+	w.Header().Set("Ext-Since-Publish", strconv.FormatInt(tm.UnixMillionSeconds()-cachedMf.RcvDateTimeMs, 10))
 	_, err := w.Write(cachedMf.Content)
 	if err != nil {
 		logger.With(zap.Int64("cost", cs.CostMs())).
