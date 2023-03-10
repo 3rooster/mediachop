@@ -100,7 +100,7 @@ func (c *Cache) GetStat() *stat {
 
 func (c *Cache) printStatToLog() {
 	zap.S().With(
-		zap.String("m", "Cache"),
+		zap.String("mod", "Cache"),
 		zap.Int64("hit", c.stat.Hit),
 		zap.Int64("miss", c.stat.Miss),
 		zap.Int("count", c.stat.CacheCount),
