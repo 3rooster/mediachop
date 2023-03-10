@@ -42,7 +42,7 @@ go build -ldflags "-X '$Path.GoVersion=$GoVersion' -X '$Path.GitCommit=$GitCommi
 
 ## mv build file
 cp mediachop ./build/bin
-cp ./tools/start.sh ./build/bin
+cp ./tools/*.sh ./build/bin
 cp ./conf/mediachop.yaml ./build/conf
 
 echo "package ..."
