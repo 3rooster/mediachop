@@ -107,3 +107,8 @@ func (c *Cache) printStatToLog() {
 		zap.Int("expired_count", c.stat.ExpiredCount),
 	).Info("Cache stat")
 }
+
+func (c *Cache) clearHitAndMissStat() {
+	c.stat.Hit = 0
+	c.stat.Miss = 0
+}

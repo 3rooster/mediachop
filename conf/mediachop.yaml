@@ -10,6 +10,6 @@ logger:
 mediaServer:
   listenPort: 8080
 cache:
-  entry_ttl_sec: 10
-  clear_interval_sec: 20
+  cache_ttl_sec: 60
+  clear_interval_sec: 60
   verbose: false

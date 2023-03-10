@@ -13,6 +13,7 @@ var Cache *cacheCfg
 
 var defaultCacheCfg = &cacheCfg{
 	ClearIntervalSec: 30,
+	CacheTTLSec:      10,
 	Verbose:          false,
 }
 

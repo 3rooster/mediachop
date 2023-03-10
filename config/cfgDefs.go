@@ -19,11 +19,11 @@ type cfg struct {
 	Env      *env               `yaml:"env"`
 	Server   *MediaServerConfig `yaml:"mediaServer"`
 	Logger   *zap.Config        `yaml:"logger"`
-	CacheCfg *cacheCfg          `yaml:"mediaCache"`
+	CacheCfg *cacheCfg          `yaml:"cache"`
 }
 
 type cacheCfg struct {
-	CacheTTLSec      int64 `yaml:"cache_ttl_sec"`
-	ClearIntervalSec int   `yaml:"clear_interval_sec"`
-	Verbose          bool  `yaml:"verbose"`
+	CacheTTLSec      int  `yaml:"cache_ttl_sec"`
+	ClearIntervalSec int  `yaml:"clear_interval_sec"`
+	Verbose          bool `yaml:"verbose"`
 }
