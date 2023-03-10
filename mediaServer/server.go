@@ -3,6 +3,7 @@ package mediaServer
 import (
 	"go.uber.org/zap"
 	"mediachop/config"
+	"mediachop/helpers/tm"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,6 +32,8 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		Event:         event,
 		Stream:        stream,
 		FileName:      fileName,
+		RcvDateTimeMs: tm.UnixMillionSeconds(),
+		RcvDateTime:   tm.NowDateTime(),
 		IsSegmentFile: strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),
 	}
 	switch r.Method {

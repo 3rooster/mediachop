@@ -12,11 +12,8 @@ var Env *env
 var Cache *cacheCfg
 
 var defaultCacheCfg = &cacheCfg{
-	EntryTTLSec:      30,
 	ClearIntervalSec: 30,
 	Verbose:          false,
-	Shards:           8,
-	MaxEntries:       2048,
 }
 
 func init() {

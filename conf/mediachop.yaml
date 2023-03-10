@@ -13,5 +13,3 @@ cache:
   entry_ttl_sec: 10
   clear_interval_sec: 20
   verbose: false
-  shards: 32
-  max_entries: 2048

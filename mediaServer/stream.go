@@ -11,6 +11,10 @@ type mediaFileInfo struct {
 	Stream        string
 	FileName      string
 	IsSegmentFile bool
+
+	RcvDateTime   string
+	RcvDateTimeMs int64
+	Content       []byte
 }
 
 func (m *mediaFileInfo) CacheKey() string {

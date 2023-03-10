@@ -22,7 +22,8 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo) {
 			Error("error on read content, err=", zap.Error(e))
 		return
 	}
-	cache.Set(mf.CacheKey(), content)
+	mf.Content = content
+	cache.Set(mf.CacheKey(), mf)
 	logger.With(zap.Int64("cost", cs.CostMs()),
 		zap.Int("bytes", len(content))).
 		Info("publish success")
