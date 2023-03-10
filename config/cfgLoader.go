@@ -2,12 +2,22 @@ package config
 
 import (
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
 
 var MediaServer *MediaServerConfig
 var Env *env
+var Cache *cacheCfg
+
+var defaultCacheCfg = &cacheCfg{
+	EntryTTLSec:      30,
+	ClearIntervalSec: 30,
+	Verbose:          false,
+	Shards:           8,
+	MaxEntries:       2048,
+}
 
 func init() {
 	initRootDir()
@@ -35,6 +45,11 @@ func LoadConfig(path string) error {
 	}
 	Env = config.Env
 	MediaServer = config.Server
+	if config.CacheCfg == nil {
+		Cache = defaultCacheCfg
+	} else {
+		Cache = config.CacheCfg
+	}
 	return processLogCfg(config.Logger)
 }
 
@@ -49,6 +64,7 @@ func processLogCfg(config *zap.Config) error {
 	if config.Encoding == "" {
 		config.Encoding = "json"
 		config.EncoderConfig = zap.NewProductionEncoderConfig()
+		config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	}
 	return initLogger(config)
 }
