@@ -8,7 +8,9 @@ import (
 )
 
 func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo) {
-	logger := zap.L().With(zap.String("event", mf.Event),
+	logger := zap.L().With(
+		zap.String("mod", "publish"),
+		zap.String("event", mf.Event),
 		zap.String("stream", mf.Stream),
 		zap.String("file", mf.FileName))
 	cs := cost.NewCost()
@@ -21,6 +23,7 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo) {
 		return
 	}
 	cache.Set(mf.CacheKey(), content)
-	logger.With(zap.Int64("cost", cs.CostMs())).
+	logger.With(zap.Int64("cost", cs.CostMs()),
+		zap.Int("bytes", len(content))).
 		Info("publish success")
 }
