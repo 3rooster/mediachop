@@ -1,6 +1,9 @@
 package config
 
-import "go.uber.org/zap"
+import (
+	"go.uber.org/zap"
+	"gopkg.in/natefinch/lumberjack.v2"
+)
 
 type env struct {
 	Mode string `yaml:"mode"`
@@ -16,10 +19,11 @@ type MediaServerConfig struct {
 }
 
 type cfg struct {
-	Env      *env               `yaml:"env"`
-	Server   *MediaServerConfig `yaml:"mediaServer"`
-	Logger   *zap.Config        `yaml:"logger"`
-	CacheCfg *cacheCfg          `yaml:"cache"`
+	Env            *env               `yaml:"env"`
+	Server         *MediaServerConfig `yaml:"mediaServer"`
+	Logger         *zap.Config        `yaml:"logger"`
+	RotationConfig *lumberjack.Logger `yaml:"logger_rotation"`
+	CacheCfg       *cacheCfg          `yaml:"cache"`
 }
 
 type cacheCfg struct {

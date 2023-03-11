@@ -3,6 +3,7 @@ package config
 import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"gopkg.in/natefinch/lumberjack.v2"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 )
@@ -24,7 +25,7 @@ func init() {
 // LoadConfig load config from file
 func LoadConfig(path string) error {
 	// log to console
-	initLogger(nil)
+	initLogger(nil, nil)
 
 	// load config
 	finalPath := GetAbsPath(path)
@@ -48,10 +49,10 @@ func LoadConfig(path string) error {
 	} else {
 		Cache = config.CacheCfg
 	}
-	return processLogCfg(config.Logger)
+	return processLogCfg(config.Logger, config.RotationConfig)
 }
 
-func processLogCfg(config *zap.Config) error {
+func processLogCfg(config *zap.Config, rotationConfig *lumberjack.Logger) error {
 
 	for i := 0; i < len(config.OutputPaths); i++ {
 		config.OutputPaths[i] = GetAbsPath(config.OutputPaths[i])
@@ -64,5 +65,5 @@ func processLogCfg(config *zap.Config) error {
 		config.EncoderConfig = zap.NewProductionEncoderConfig()
 		config.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 	}
-	return initLogger(config)
+	return initLogger(config, rotationConfig)
 }

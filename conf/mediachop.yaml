@@ -3,10 +3,13 @@ env:
 logger:
   level: info
   development: true
-  outputPaths: # log output
-    - log/chop.log
   errorOutputPaths: # only for zap internal error logs
     - log/zap.log
+logger_rotation:
+  filename: log/chop.log # log output
+  maxsize: 500 #mb
+  maxbackups: 7 #
+  maxage: 28 # day
 mediaServer:
   listenPort: 8080
 cache:
