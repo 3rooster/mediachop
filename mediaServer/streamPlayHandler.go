@@ -4,25 +4,26 @@ import (
 	"go.uber.org/zap"
 	"mediachop/helpers/tm"
 	"mediachop/service/cost"
+	"mediachop/service/mediaStore"
 	"net/http"
 	"strconv"
 )
 
-func playStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo, sf *streamInfo) {
+func playStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile, sf *mediaStore.Stream) {
 	logger := zap.L().With(
 		zap.String("mod", "play"),
 		zap.String("event", mf.Event),
 		zap.String("stream", mf.Stream),
 		zap.String("file", mf.FileName))
 	cs := cost.NewCost()
-	cachedData, _ := sf.cache.Get(mf.CacheKey())
+	cachedData, _ := sf.Get(mf.CacheKey())
 	if cachedData == nil {
 		w.WriteHeader(404)
 		logger.With(zap.Int64("cost", cs.CostMs())).
 			Debug("not found")
 		return
 	}
-	cachedMf := cachedData.(*mediaFileInfo)
+	cachedMf := cachedData.(*mediaStore.MediaFile)
 	w.Header().Set("Ext-Rcv-File-Time", strconv.FormatInt(cachedMf.RcvDateTimeMs, 10))
 	w.Header().Set("Ext-Rcv-File-Date", cachedMf.RcvDateTime)
 	w.Header().Set("Ext-Since-Rcv-File", strconv.FormatInt(tm.UnixMillionSeconds()-cachedMf.RcvDateTimeMs, 10))

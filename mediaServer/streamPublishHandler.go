@@ -5,10 +5,11 @@ import (
 	"io"
 	"mediachop/helpers/tm"
 	"mediachop/service/cost"
+	"mediachop/service/mediaStore"
 	"net/http"
 )
 
-func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo, sf *streamInfo) {
+func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile, sf *mediaStore.Stream) {
 	logger := zap.L().With(
 		zap.String("mod", "publish"),
 		zap.String("event", mf.Event),
@@ -28,7 +29,7 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo, sf
 	mf.PublishedDateTime = tm.NowDateTime()
 	mf.PublishCostMs = mf.PublishedDateTimeMs - mf.RcvDateTimeMs
 
-	sf.cache.Set(mf.CacheKey(), mf)
+	sf.Set(mf.CacheKey(), mf)
 	logger.With(zap.Int64("cost", cs.CostMs()),
 		zap.Int("bytes", len(content))).
 		Info("publish success")

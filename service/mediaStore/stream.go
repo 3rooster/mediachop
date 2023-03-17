@@ -1,11 +1,11 @@
-package mediaServer
+package mediaStore
 
 import (
 	"errors"
 	"strings"
 )
 
-type mediaFileInfo struct {
+type MediaFile struct {
 	Path       string
 	Event      string
 	Stream     string
@@ -20,15 +20,15 @@ type mediaFileInfo struct {
 	Content             []byte
 }
 
-func (m *mediaFileInfo) CacheKey() string {
+func (m *MediaFile) CacheKey() string {
 	return m.Path
 }
 
-func (m *mediaFileInfo) StreamKey() string {
+func (m *MediaFile) StreamKey() string {
 	return m.Event + m.Stream
 }
 
-func parseStreamInfoFromPath(path string) (event, stream, fileName string, err error) {
+func ParseStreamInfoFromPath(path string) (event, stream, fileName string, err error) {
 	parts := strings.Split(path, "/")
 	if parts[0] == "" {
 		parts = parts[1:]

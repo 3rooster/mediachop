@@ -1,13 +1,16 @@
 package mediaServer
 
-import "testing"
+import (
+	"mediachop/service/mediaStore"
+	"testing"
+)
 
 func TestParseStreamInfoFromPath(t *testing.T) {
 	urlPath := "/event/stream/file.ts"
 	event := "event"
 	stream := "stream"
 	file := "file.ts"
-	ev, s, f, e := parseStreamInfoFromPath(urlPath)
+	ev, s, f, e := mediaStore.parseStreamInfoFromPath(urlPath)
 	noError(t, e)
 	assertEqual(t, event, ev)
 	assertEqual(t, stream, s)
@@ -19,7 +22,7 @@ func TestParseStreamInfoFromPathWithNoPrefixSlash(t *testing.T) {
 	event := "event"
 	stream := "stream"
 	file := "file.ts"
-	ev, s, f, e := parseStreamInfoFromPath(urlPath)
+	ev, s, f, e := mediaStore.parseStreamInfoFromPath(urlPath)
 	noError(t, e)
 	assertEqual(t, event, ev)
 	assertEqual(t, stream, s)
@@ -31,7 +34,7 @@ func TestParseStreamInfoFromPathWithExtraDir(t *testing.T) {
 	event := "event"
 	stream := "stream"
 	file := "720p/file.ts"
-	ev, s, f, e := parseStreamInfoFromPath(urlPath)
+	ev, s, f, e := mediaStore.parseStreamInfoFromPath(urlPath)
 	noError(t, e)
 	assertEqual(t, event, ev)
 	assertEqual(t, stream, s)
