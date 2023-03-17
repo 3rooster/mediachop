@@ -1,7 +1,7 @@
 package mediaStore
 
 import (
-	"bufio"
+	"bytes"
 	"errors"
 	"strings"
 )
@@ -20,7 +20,7 @@ type MediaFile struct {
 	PublishedDateTime   string
 	PublishedDateTimeMs int64
 	PublishCostMs       int64
-	Content             bufio.ReadWriter
+	Content             *bytes.Buffer
 }
 
 func (m *MediaFile) CacheKey() string {
