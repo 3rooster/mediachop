@@ -38,7 +38,7 @@ func playStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile
 	} else {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 	}
-	bn, err := w.Write(cachedMf.Content)
+	bn, err := w.Write(cachedMf.Content.Bytes())
 	if err != nil {
 		logger.With(zap.Int64("cost", cs.CostMs())).
 			Error("play failed on write to client, err=", zap.Error(err))
