@@ -6,16 +6,17 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
+	"mediachop/service/mediaCache"
 )
 
 var MediaServer *MediaServerConfig
 var Env *env
-var Cache *cacheCfg
+var Cache *mediaCache.Config
 
-var defaultCacheCfg = &cacheCfg{
+var defaultCacheCfg = &mediaCache.Config{
 	ClearIntervalSec: 30,
-	CacheTTLSec:      10,
-	Verbose:          false,
+	DefaultTTLSec:    10,
+	Shards:           8,
 }
 
 func init() {
