@@ -7,7 +7,7 @@ import (
 )
 
 type CacheGroup struct {
-	group            map[uint64]*cache
+	group            map[uint64]*Cache
 	shards           uint64
 	stat             stat
 	clearIntervalSec int
@@ -15,13 +15,13 @@ type CacheGroup struct {
 	logger           *zap.Logger
 }
 
-func (c *CacheGroup) getShardCache(key string) *cache {
+func (c *CacheGroup) getShardCache(key string) *Cache {
 	h := fnv.New64()
 	h.Write([]byte(key))
 	return c.group[h.Sum64()%c.shards]
 }
 
-// Set cache use default ttl
+// Set Cache use default ttl
 func (c *CacheGroup) Set(key string, value any) {
 	c.getShardCache(key).SetEx(key, value, c.defaultTTLMs)
 }
@@ -36,7 +36,7 @@ func (c *CacheGroup) TTL(key string, ttlMs int64) (data any, exist bool) {
 	return c.getShardCache(key).TTL(key, ttlMs)
 }
 
-func (c *CacheGroup) GetCacheItem(key string) *cacheItem {
+func (c *CacheGroup) GetCacheItem(key string) *CacheItem {
 	return c.getShardCache(key).GetCacheItem(key)
 }
 
@@ -79,10 +79,10 @@ func (c *CacheGroup) printStatToLog() {
 		c.logger = zap.L()
 	}
 	c.logger.With(
-		zap.String("mod", "cache"),
+		zap.String("mod", "Cache"),
 		zap.Int64("hit", c.stat.Hit),
 		zap.Int64("miss", c.stat.Miss),
 		zap.Int("count", c.stat.CacheCount),
 		zap.Int("expired_count", c.stat.ExpiredCount),
-	).Info("cache stat")
+	).Info("Cache stat")
 }

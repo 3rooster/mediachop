@@ -5,16 +5,18 @@ import (
 	"mediachop/config"
 	"mediachop/service/cache"
 	"sync"
+	"time"
 )
 
 type Stream struct {
-	*cache.CacheGroup
+	*cache.Cache
 	streamKey string
 }
 
 type streamStore struct {
-	cache          *cache.CacheGroup
-	streamInfoLock sync.Mutex
+	cache            *cache.Cache
+	streamInfoLock   sync.Mutex
+	clearIntervalSec int
 }
 
 func (sc *streamStore) GetStreamInfo(mf *MediaFile) *Stream {
@@ -30,12 +32,26 @@ func (sc *streamStore) GetStreamInfo(mf *MediaFile) *Stream {
 		return cachedStream
 	}
 	cachedStream := &Stream{
-		CacheGroup: cache.NewCache(config.StreamCache),
-		streamKey:  mf.StreamKey(),
+		Cache:     cache.NewCache(int64(config.StreamCache.DefaultTTLSec)*1000, false),
+		streamKey: mf.StreamKey(),
 	}
 	cachedStream.SetLogger(
 		zap.L().With(zap.String("cache", "stream"),
 			zap.String("stream", mf.StreamKey())))
 	sc.cache.SetEx(mf.StreamKey(), cachedStream, ttlMs)
 	return cachedStream
+}
+
+func (sc *streamStore) runClean() {
+	for {
+		sc.cache.Range(func(key string, v *cache.CacheItem) bool {
+			ca := v.Data.(*cache.Cache)
+			ca.Clear()
+			ca.PrintStatToLog()
+			return true
+		})
+		sc.cache.Clear()
+		time.Sleep(time.Duration(sc.clearIntervalSec) * time.Second)
+	}
+
 }
