@@ -16,6 +16,7 @@ func Init() {
 		clearIntervalSec: 10,
 	}
 	store.cache.SetLogger(zap.L().With(zap.String("cache", "stream_store")))
+	go store.runClean()
 }
 
 func GetStreamInfo(mf *MediaFile) *Stream {
