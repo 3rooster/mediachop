@@ -16,7 +16,7 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaF
 		zap.String("stream", mf.Stream),
 		zap.String("file", mf.FileName))
 	cs := cost.NewCost()
-	content, e := io.ReadAll(r.Body)
+	bn, e := io.Copy(mf.Content, r.Body)
 	if e != nil {
 		w.WriteHeader(502)
 		w.Write([]byte(e.Error()))
@@ -24,13 +24,12 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaF
 			Error("error on read content, err=", zap.Error(e))
 		return
 	}
-	mf.Content = content
 	mf.PublishedDateTimeMs = tm.UnixMillionSeconds()
 	mf.PublishedDateTime = tm.NowDateTime()
 	mf.PublishCostMs = mf.PublishedDateTimeMs - mf.RcvDateTimeMs
 
 	sf.Set(mf.CacheKey(), mf)
 	logger.With(zap.Int64("cost", cs.CostMs()),
-		zap.Int("bytes", len(content))).
+		zap.Int64("bytes", bn)).
 		Info("publish success")
 }

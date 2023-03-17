@@ -30,6 +30,7 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error("path not support")
 		return
 	}
+
 	mf := &mediaStore.MediaFile{
 		Path:          r.URL.Path,
 		Event:         event,
