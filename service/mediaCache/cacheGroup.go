@@ -12,6 +12,7 @@ type CacheGroup struct {
 	stat             stat
 	clearIntervalSec int
 	defaultTTLMs     int64
+	logger           *zap.Logger
 }
 
 func (c *CacheGroup) getShardCache(key string) *cache {
@@ -49,6 +50,11 @@ func (c *CacheGroup) Delete(key string) bool {
 	return c.getShardCache(key).Delete(key)
 }
 
+// SetLogger set logger
+func (c *CacheGroup) SetLogger(logger *zap.Logger) {
+	c.logger = logger
+}
+
 // clear expired data
 func (c *CacheGroup) runClear() {
 	for {
@@ -69,7 +75,10 @@ func (c *CacheGroup) runClear() {
 }
 
 func (c *CacheGroup) printStatToLog() {
-	zap.S().With(
+	if c.logger == nil {
+		c.logger = zap.L()
+	}
+	c.logger.With(
 		zap.String("mod", "cache"),
 		zap.Int64("hit", c.stat.Hit),
 		zap.Int64("miss", c.stat.Miss),
