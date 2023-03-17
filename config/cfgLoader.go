@@ -6,17 +6,22 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
-	"mediachop/service/mediaCache"
+	"mediachop/service/cache"
 )
 
 var MediaServer *MediaServerConfig
 var Env *env
-var Cache *mediaCache.Config
 
-var defaultCacheCfg = &mediaCache.Config{
+var Cache = &cache.Config{
 	ClearIntervalSec: 30,
 	DefaultTTLSec:    10,
 	Shards:           8,
+}
+
+var StreamCache = &cache.Config{
+	ClearIntervalSec: 30,
+	DefaultTTLSec:    10,
+	Shards:           2,
 }
 
 func init() {
@@ -45,10 +50,11 @@ func LoadConfig(path string) error {
 	}
 	Env = config.Env
 	MediaServer = config.Server
-	if config.CacheCfg == nil {
-		Cache = defaultCacheCfg
-	} else {
+	if config.CacheCfg != nil {
 		Cache = config.CacheCfg
+	}
+	if config.StreamCache != nil {
+		StreamCache = config.StreamCache
 	}
 	return processLogCfg(config.Logger, config.RotationConfig)
 }

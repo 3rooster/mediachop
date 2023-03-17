@@ -38,11 +38,12 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		RcvDateTime:   tm.NowDateTime(),
 		IsPlaylist:    strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),
 	}
+	sf := streams.getStreamInfo(mf)
 	switch r.Method {
 	case http.MethodGet:
-		playStream(w, r, mf)
+		playStream(w, r, mf, sf)
 	case http.MethodPut:
-		publishStream(w, r, mf)
+		publishStream(w, r, mf, sf)
 	default:
 		w.WriteHeader(401)
 		w.Write([]byte("not support"))

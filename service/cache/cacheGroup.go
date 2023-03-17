@@ -1,4 +1,4 @@
-package mediaCache
+package cache
 
 import (
 	"go.uber.org/zap"

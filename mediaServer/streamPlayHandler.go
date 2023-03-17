@@ -8,14 +8,14 @@ import (
 	"strconv"
 )
 
-func playStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo) {
+func playStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo, sf *streamInfo) {
 	logger := zap.L().With(
 		zap.String("mod", "play"),
 		zap.String("event", mf.Event),
 		zap.String("stream", mf.Stream),
 		zap.String("file", mf.FileName))
 	cs := cost.NewCost()
-	cachedData, _ := cache.Get(mf.CacheKey())
+	cachedData, _ := sf.cache.Get(mf.CacheKey())
 	if cachedData == nil {
 		w.WriteHeader(404)
 		logger.With(zap.Int64("cost", cs.CostMs())).

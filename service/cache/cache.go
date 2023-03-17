@@ -1,4 +1,4 @@
-package mediaCache
+package cache
 
 import (
 	"github.com/3rooster/genericGoBox/syncMap"

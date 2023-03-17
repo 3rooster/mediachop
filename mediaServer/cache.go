@@ -1,19 +1,15 @@
 package mediaServer
 
 import (
+	"go.uber.org/zap"
 	"mediachop/config"
-	"mediachop/service/mediaCache"
+	"mediachop/service/cache"
 )
 
-var cache *mediaCache.CacheGroup
+var streams *streamInfoStore
 
-// InitCache init mediaCache
+// InitCache init cache
 func InitCache() {
-	cache = mediaCache.NewCache(config.Cache)
+	streams = &streamInfoStore{cache: cache.NewCache(config.Cache)}
+	streams.cache.SetLogger(zap.L().With(zap.String("cache", "stream_cache")))
 }
-
-var streamCache = mediaCache.NewCache(&mediaCache.Config{
-	ClearIntervalSec: 60,
-	DefaultTTLSec:    60,
-	Shards:           8,
-})
