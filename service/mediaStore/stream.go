@@ -1,7 +1,6 @@
 package mediaStore
 
 import (
-	"bytes"
 	"errors"
 	"strings"
 )
@@ -20,7 +19,7 @@ type MediaFile struct {
 	PublishedDateTime   string
 	PublishedDateTimeMs int64
 	PublishCostMs       int64
-	Content             *bytes.Buffer
+	Content             []byte
 }
 
 func (m *MediaFile) CacheKey() string {
