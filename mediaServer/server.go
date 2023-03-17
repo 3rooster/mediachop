@@ -32,11 +32,12 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	mf := &mediaStore.MediaFile{
-		Path:          r.URL.Path,
-		Event:         event,
-		Stream:        stream,
-		FileName:      fileName,
-		StreamKey:     event + "/" + stream,
+		Path:      r.URL.Path,
+		Event:     event,
+		Stream:    stream,
+		FileName:  fileName,
+		StreamKey: event + "/" + stream,
+		// todo set Content:
 		RcvDateTimeMs: tm.UnixMillionSeconds(),
 		RcvDateTime:   tm.NowDateTime(),
 		IsPlaylist:    strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),
