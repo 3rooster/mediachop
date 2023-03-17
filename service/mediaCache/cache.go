@@ -26,10 +26,9 @@ type stat struct {
 	ExpiredCount int
 }
 type Cache struct {
-	store            syncMap.Map[string, *cacheItem]
-	stat             stat
-	clearIntervalSec int
-	defaultTTLMs     int64
+	store        syncMap.Map[string, *cacheItem]
+	stat         stat
+	defaultTTLMs int64
 }
 
 var cacheItemPool = syncPool.Pool[*cacheItem]{}

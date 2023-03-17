@@ -29,5 +29,6 @@ type cfg struct {
 type cacheCfg struct {
 	CacheTTLSec      int  `yaml:"cache_ttl_sec"`
 	ClearIntervalSec int  `yaml:"clear_interval_sec"`
+	Shards           int  `yaml:"shards"`
 	Verbose          bool `yaml:"verbose"`
 }

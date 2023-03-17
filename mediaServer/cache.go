@@ -12,5 +12,6 @@ func InitCache() {
 	cache = mediaCache.NewCache(&mediaCache.Config{
 		ClearIntervalSec: config.Cache.ClearIntervalSec,
 		DefaultTTLSec:    config.Cache.CacheTTLSec,
+		Shards:           config.Cache.Shards,
 	})
 }
