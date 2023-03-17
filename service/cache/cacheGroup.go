@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type CacheGroup struct {
+type Group struct {
 	group            map[uint64]*Cache
 	shards           uint64
 	stat             stat
@@ -15,48 +15,48 @@ type CacheGroup struct {
 	logger           *zap.Logger
 }
 
-func (c *CacheGroup) getShardCache(key string) *Cache {
+func (c *Group) getShardCache(key string) *Cache {
 	h := fnv.New64()
 	h.Write([]byte(key))
 	return c.group[h.Sum64()%c.shards]
 }
 
 // Set Cache use default ttl
-func (c *CacheGroup) Set(key string, value any) {
+func (c *Group) Set(key string, value any) {
 	c.getShardCache(key).SetEx(key, value, c.defaultTTLMs)
 }
 
 // SetEx set with ttl ms
-func (c *CacheGroup) SetEx(key string, value any, ttlMs int64) {
+func (c *Group) SetEx(key string, value any, ttlMs int64) {
 	c.getShardCache(key).SetEx(key, value, ttlMs)
 }
 
 // TTL set key ttl
-func (c *CacheGroup) TTL(key string, ttlMs int64) (data any, exist bool) {
+func (c *Group) TTL(key string, ttlMs int64) (data any, exist bool) {
 	return c.getShardCache(key).TTL(key, ttlMs)
 }
 
-func (c *CacheGroup) GetCacheItem(key string) *CacheItem {
+func (c *Group) GetCacheItem(key string) *Item {
 	return c.getShardCache(key).GetCacheItem(key)
 }
 
 // Get get value of key
-func (c *CacheGroup) Get(key string) (data any, expired bool) {
+func (c *Group) Get(key string) (data any, expired bool) {
 	return c.getShardCache(key).Get(key)
 }
 
 // Delete delete key
-func (c *CacheGroup) Delete(key string) bool {
+func (c *Group) Delete(key string) bool {
 	return c.getShardCache(key).Delete(key)
 }
 
 // SetLogger set logger
-func (c *CacheGroup) SetLogger(logger *zap.Logger) {
+func (c *Group) SetLogger(logger *zap.Logger) {
 	c.logger = logger
 }
 
 // clear expired data
-func (c *CacheGroup) runClear() {
+func (c *Group) runClear() {
 	for {
 		for _, cacheInstance := range c.group {
 			cacheInstance.Clear()
@@ -74,12 +74,12 @@ func (c *CacheGroup) runClear() {
 	}
 }
 
-func (c *CacheGroup) printStatToLog() {
+func (c *Group) printStatToLog() {
 	if c.logger == nil {
 		c.logger = zap.L()
 	}
 	c.logger.With(
-		zap.String("mod", "Cache"),
+		zap.String("mod", "group_cache"),
 		zap.Int64("hit", c.stat.Hit),
 		zap.Int64("miss", c.stat.Miss),
 		zap.Int("count", c.stat.CacheCount),

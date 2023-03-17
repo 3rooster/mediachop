@@ -2,42 +2,12 @@ package cache
 
 import (
 	"github.com/3rooster/genericGoBox/syncMap"
-	"github.com/3rooster/genericGoBox/syncPool"
 	"go.uber.org/zap"
 	"mediachop/helpers/tm"
 )
 
-var cacheItemPool = syncPool.NewPool[*CacheItem](func() any {
-	return &CacheItem{}
-})
-
-type CacheItem struct {
-	CreateTimeMs  int64
-	ExpiredTimeMs int64
-	Data          any
-}
-
-func (c *CacheItem) reset() {
-	c.Data = nil
-	c.CreateTimeMs = 0
-	c.ExpiredTimeMs = 0
-}
-
-type stat struct {
-	Hit          int64
-	Miss         int64
-	SetTimes     int64
-	CacheCount   int
-	ExpiredCount int
-}
-
-func (s *stat) clearHitAndMissStat() {
-	s.Hit = 0
-	s.Miss = 0
-}
-
 type Cache struct {
-	store        syncMap.Map[string, *CacheItem]
+	store        syncMap.Map[string, *Item]
 	stat         stat
 	defaultTTLMs int64
 	logger       *zap.Logger
@@ -64,7 +34,7 @@ func (c *Cache) TTL(key string, ttlMs int64) (data any, exist bool) {
 	return nil, false
 }
 
-func (c *Cache) GetCacheItem(key string) *CacheItem {
+func (c *Cache) GetCacheItem(key string) *Item {
 	if item, o := c.store.Load(key); o {
 		return item
 	}
@@ -92,7 +62,7 @@ func (c *Cache) Delete(key string) bool {
 func (c *Cache) Clear() {
 	deleteKeys := map[string]int{}
 	cnt := 0
-	c.store.Range(func(key string, value *CacheItem) bool {
+	c.store.Range(func(key string, value *Item) bool {
 		item := value
 		k := key
 		if tm.UnixMillionSeconds() > item.ExpiredTimeMs {
@@ -128,8 +98,8 @@ func (c *Cache) SetLogger(logger *zap.Logger) {
 }
 
 // Range range cache items
-func (c *Cache) Range(rangeFunc func(key string, v *CacheItem) bool) {
-	c.store.Range(func(key string, v *CacheItem) bool {
+func (c *Cache) Range(rangeFunc func(key string, v *Item) bool) {
+	c.store.Range(func(key string, v *Item) bool {
 		return rangeFunc(key, v)
 	})
 }

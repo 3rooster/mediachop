@@ -10,8 +10,8 @@ type Config struct {
 	Shards           int `yaml:"shards"`
 }
 
-func NewCacheGroup(cfg *Config) *CacheGroup {
-	c := &CacheGroup{
+func NewCacheGroup(cfg *Config) *Group {
+	c := &Group{
 		group:            map[uint64]*Cache{},
 		stat:             stat{},
 		clearIntervalSec: cfg.ClearIntervalSec,
@@ -36,7 +36,7 @@ func NewCacheGroup(cfg *Config) *CacheGroup {
 
 func NewCache(defaultTTLMS int64, runClean bool) *Cache {
 	r := &Cache{
-		store:        syncMap.Map[string, *CacheItem]{},
+		store:        syncMap.Map[string, *Item]{},
 		stat:         stat{},
 		defaultTTLMs: defaultTTLMS,
 	}

@@ -44,7 +44,7 @@ func (sc *streamStore) GetStreamInfo(mf *MediaFile) *Stream {
 
 func (sc *streamStore) runClean() {
 	for {
-		sc.cache.Range(func(key string, v *cache.CacheItem) bool {
+		sc.cache.Range(func(key string, v *cache.Item) bool {
 			ca := v.Data.(*cache.Cache)
 			ca.Clear()
 			ca.PrintStatToLog()
