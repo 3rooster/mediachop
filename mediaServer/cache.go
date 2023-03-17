@@ -5,7 +5,7 @@ import (
 	"mediachop/service/mediaCache"
 )
 
-var cache *mediaCache.Cache
+var cache *mediaCache.CacheGroup
 
 // InitCache init mediaCache
 func InitCache() {

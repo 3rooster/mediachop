@@ -1,11 +1,9 @@
 package mediaCache
 
 import (
+	"github.com/3rooster/genericGoBox/syncMap"
 	"github.com/3rooster/genericGoBox/syncPool"
-	"go.uber.org/zap"
-	"mediachop/common/syncMap"
 	"mediachop/helpers/tm"
-	"time"
 )
 
 type cacheItem struct {
@@ -36,12 +34,6 @@ type Cache struct {
 
 var cacheItemPool = syncPool.Pool[*cacheItem]{}
 
-func (c *Cache) run() {
-	for {
-		c.Clear()
-		time.Sleep(time.Second * time.Duration(c.clearIntervalSec))
-	}
-}
 func (c *Cache) Set(key string, value any) {
 	c.SetEx(key, value, c.defaultTTLMs)
 
@@ -92,8 +84,8 @@ func (c *Cache) Clear() {
 		cnt++
 		return true
 	})
-	c.stat.CacheCount = cnt
 	c.stat.ExpiredCount = len(deleteKeys)
+	c.stat.CacheCount = cnt - c.stat.ExpiredCount
 	for k, _ := range deleteKeys {
 		v, _ := c.store.Load(k)
 		c.store.Delete(k)
@@ -101,16 +93,11 @@ func (c *Cache) Clear() {
 			cacheItemPool.Put(v)
 		}
 	}
-	c.printStatToLog()
+
 }
 
 func (c *Cache) Count() int {
-	cnt := 0
-	c.store.Range(func(key string, value *cacheItem) bool {
-		cnt++
-		return true
-	})
-	return cnt
+	return c.store.Count()
 }
 
 func (c *Cache) GetStat() *stat {
@@ -118,17 +105,7 @@ func (c *Cache) GetStat() *stat {
 	return &c.stat
 }
 
-func (c *Cache) printStatToLog() {
-	zap.S().With(
-		zap.String("mod", "Cache"),
-		zap.Int64("hit", c.stat.Hit),
-		zap.Int64("miss", c.stat.Miss),
-		zap.Int("count", c.stat.CacheCount),
-		zap.Int("expired_count", c.stat.ExpiredCount),
-	).Info("Cache stat")
-}
-
-func (c *Cache) clearHitAndMissStat() {
-	c.stat.Hit = 0
-	c.stat.Miss = 0
+func (s *stat) clearHitAndMissStat() {
+	s.Hit = 0
+	s.Miss = 0
 }

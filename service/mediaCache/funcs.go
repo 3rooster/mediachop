@@ -1,14 +1,18 @@
 package mediaCache
 
-import "mediachop/common/syncMap"
+type Config struct {
+	ClearIntervalSec int
+	DefaultTTLSec    int
+	Shards           int
+}
 
-func NewCache(cfg *Config) *Cache {
-	c := &Cache{
-		store:            syncMap.Map[string, *cacheItem]{},
+func NewCache(cfg *Config) *CacheGroup {
+	c := &CacheGroup{
+		group:            map[uint64]*Cache{},
 		stat:             stat{},
 		clearIntervalSec: cfg.ClearIntervalSec,
 		defaultTTLMs:     int64(cfg.DefaultTTLSec) * 1000,
 	}
-	go c.run()
+	go c.runClear()
 	return c
 }
