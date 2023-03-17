@@ -46,6 +46,14 @@ func (c *cache) SetEx(key string, value any, ttlMs int64) {
 	c.store.Store(key, item)
 }
 
+func (c *cache) TTL(key string, ttlMs int64) (data any, exist bool) {
+	if item, o := c.store.Load(key); o {
+		item.ExpiredTimeMs = tm.UnixMillionSeconds() + ttlMs
+		return item.Data, true
+	}
+	return nil, false
+}
+
 func (c *cache) GetCacheItem(key string) *cacheItem {
 	if item, o := c.store.Load(key); o {
 		return item

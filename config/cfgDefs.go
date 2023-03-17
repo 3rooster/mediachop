@@ -3,6 +3,7 @@ package config
 import (
 	"go.uber.org/zap"
 	"gopkg.in/natefinch/lumberjack.v2"
+	"mediachop/service/mediaCache"
 )
 
 type env struct {
@@ -23,12 +24,5 @@ type cfg struct {
 	Server         *MediaServerConfig `yaml:"mediaServer"`
 	Logger         *zap.Config        `yaml:"logger"`
 	RotationConfig *lumberjack.Logger `yaml:"logger_rotation"`
-	CacheCfg       *cacheCfg          `yaml:"cache"`
-}
-
-type cacheCfg struct {
-	CacheTTLSec      int  `yaml:"cache_ttl_sec"`
-	ClearIntervalSec int  `yaml:"clear_interval_sec"`
-	Shards           int  `yaml:"shards"`
-	Verbose          bool `yaml:"verbose"`
+	CacheCfg       *mediaCache.Config `yaml:"cache"`
 }

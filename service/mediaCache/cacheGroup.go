@@ -20,26 +20,36 @@ func (c *CacheGroup) getShardCache(key string) *cache {
 	return c.group[h.Sum64()%c.shards]
 }
 
+// Set cache use default ttl
 func (c *CacheGroup) Set(key string, value any) {
-	c.getShardCache(key).Set(key, value)
-
+	c.getShardCache(key).SetEx(key, value, c.defaultTTLMs)
 }
+
+// SetEx set with ttl ms
 func (c *CacheGroup) SetEx(key string, value any, ttlMs int64) {
 	c.getShardCache(key).SetEx(key, value, ttlMs)
+}
+
+// TTL set key ttl
+func (c *CacheGroup) TTL(key string, ttlMs int64) (data any, exist bool) {
+	return c.getShardCache(key).TTL(key, ttlMs)
 }
 
 func (c *CacheGroup) GetCacheItem(key string) *cacheItem {
 	return c.getShardCache(key).GetCacheItem(key)
 }
 
+// Get get value of key
 func (c *CacheGroup) Get(key string) (data any, expired bool) {
 	return c.getShardCache(key).Get(key)
 }
 
+// Delete delete key
 func (c *CacheGroup) Delete(key string) bool {
 	return c.getShardCache(key).Delete(key)
 }
 
+// clear expired data
 func (c *CacheGroup) runClear() {
 	for {
 		for _, cacheInstance := range c.group {

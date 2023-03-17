@@ -5,9 +5,9 @@ import (
 )
 
 type Config struct {
-	ClearIntervalSec int
-	DefaultTTLSec    int
-	Shards           int
+	ClearIntervalSec int `yaml:"clear_interval_sec"`
+	DefaultTTLSec    int `yaml:"cache_ttl_sec"`
+	Shards           int `yaml:"shards"`
 }
 
 func NewCache(cfg *Config) *CacheGroup {
@@ -16,11 +16,16 @@ func NewCache(cfg *Config) *CacheGroup {
 		stat:             stat{},
 		clearIntervalSec: cfg.ClearIntervalSec,
 		defaultTTLMs:     int64(cfg.DefaultTTLSec) * 1000,
+		shards:           uint64(cfg.Shards),
 	}
-	if cfg.Shards <= 0 {
+	if c.shards <= 0 || c.shards > 512 {
 		c.shards = 8
-	} else {
-		c.shards = uint64(cfg.Shards)
+	}
+	if c.defaultTTLMs <= 0 {
+		c.defaultTTLMs = 1000
+	}
+	if c.clearIntervalSec <= 0 {
+		c.clearIntervalSec = 10
 	}
 	for i := uint64(0); i < c.shards; i++ {
 		c.group[i] = &cache{
