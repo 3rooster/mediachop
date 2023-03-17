@@ -36,7 +36,7 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		FileName:      fileName,
 		RcvDateTimeMs: tm.UnixMillionSeconds(),
 		RcvDateTime:   tm.NowDateTime(),
-		IsSegmentFile: strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),
+		IsPlaylist:    strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),
 	}
 	switch r.Method {
 	case http.MethodGet:

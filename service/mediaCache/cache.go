@@ -31,7 +31,9 @@ type cache struct {
 	defaultTTLMs int64
 }
 
-var cacheItemPool = syncPool.Pool[*cacheItem]{}
+var cacheItemPool = syncPool.NewPool[*cacheItem](func() any {
+	return &cacheItem{}
+})
 
 func (c *cache) Set(key string, value any) {
 	c.SetEx(key, value, c.defaultTTLMs)

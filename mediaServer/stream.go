@@ -6,11 +6,11 @@ import (
 )
 
 type mediaFileInfo struct {
-	Path          string
-	Event         string
-	Stream        string
-	FileName      string
-	IsSegmentFile bool
+	Path       string
+	Event      string
+	Stream     string
+	FileName   string
+	IsPlaylist bool
 
 	RcvDateTime         string
 	RcvDateTimeMs       int64

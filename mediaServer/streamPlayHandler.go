@@ -32,7 +32,7 @@ func playStream(w http.ResponseWriter, r *http.Request, mf *mediaFileInfo) {
 	w.Header().Set("Ext-Since-Published", strconv.FormatInt(tm.UnixMillionSeconds()-cachedMf.PublishedDateTimeMs, 10))
 
 	w.Header().Set("Ext-Publish-Cost", strconv.FormatInt(cachedMf.PublishCostMs, 10))
-	if !cachedMf.IsSegmentFile {
+	if cachedMf.IsPlaylist {
 		w.Header().Set("Cache-Control", "no-store")
 	} else {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
