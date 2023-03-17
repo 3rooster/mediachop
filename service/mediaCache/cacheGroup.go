@@ -7,14 +7,14 @@ import (
 )
 
 type CacheGroup struct {
-	group            map[uint64]*Cache
+	group            map[uint64]*cache
 	shards           uint64
 	stat             stat
 	clearIntervalSec int
 	defaultTTLMs     int64
 }
 
-func (c *CacheGroup) getShardCache(key string) *Cache {
+func (c *CacheGroup) getShardCache(key string) *cache {
 	h := fnv.New64()
 	h.Write([]byte(key))
 	return c.group[h.Sum64()%c.shards]
@@ -60,10 +60,10 @@ func (c *CacheGroup) runClear() {
 
 func (c *CacheGroup) printStatToLog() {
 	zap.S().With(
-		zap.String("mod", "Cache"),
+		zap.String("mod", "cache"),
 		zap.Int64("hit", c.stat.Hit),
 		zap.Int64("miss", c.stat.Miss),
 		zap.Int("count", c.stat.CacheCount),
 		zap.Int("expired_count", c.stat.ExpiredCount),
-	).Info("Cache stat")
+	).Info("cache stat")
 }

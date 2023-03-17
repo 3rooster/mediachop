@@ -25,7 +25,7 @@ type stat struct {
 	CacheCount   int
 	ExpiredCount int
 }
-type Cache struct {
+type cache struct {
 	store        syncMap.Map[string, *cacheItem]
 	stat         stat
 	defaultTTLMs int64
@@ -33,11 +33,11 @@ type Cache struct {
 
 var cacheItemPool = syncPool.Pool[*cacheItem]{}
 
-func (c *Cache) Set(key string, value any) {
+func (c *cache) Set(key string, value any) {
 	c.SetEx(key, value, c.defaultTTLMs)
 
 }
-func (c *Cache) SetEx(key string, value any, ttlMs int64) {
+func (c *cache) SetEx(key string, value any, ttlMs int64) {
 	c.stat.SetTimes++
 	item := cacheItemPool.Get()
 	item.CreateTimeMs = tm.UnixMillionSeconds()
@@ -46,14 +46,14 @@ func (c *Cache) SetEx(key string, value any, ttlMs int64) {
 	c.store.Store(key, item)
 }
 
-func (c *Cache) GetCacheItem(key string) *cacheItem {
+func (c *cache) GetCacheItem(key string) *cacheItem {
 	if item, o := c.store.Load(key); o {
 		return item
 	}
 	return nil
 }
 
-func (c *Cache) Get(key string) (data any, expired bool) {
+func (c *cache) Get(key string) (data any, expired bool) {
 	if item, o := c.store.Load(key); o {
 		c.stat.Hit++
 		return item.Data, tm.UnixMillionSeconds() > item.ExpiredTimeMs
@@ -62,7 +62,7 @@ func (c *Cache) Get(key string) (data any, expired bool) {
 	return nil, false
 }
 
-func (c *Cache) Delete(key string) bool {
+func (c *cache) Delete(key string) bool {
 	if v, o := c.store.Load(key); o {
 		c.store.Delete(key)
 		cacheItemPool.Put(v)
@@ -71,7 +71,7 @@ func (c *Cache) Delete(key string) bool {
 	return false
 }
 
-func (c *Cache) Clear() {
+func (c *cache) Clear() {
 	deleteKeys := map[string]int{}
 	cnt := 0
 	c.store.Range(func(key string, value *cacheItem) bool {
@@ -95,11 +95,11 @@ func (c *Cache) Clear() {
 
 }
 
-func (c *Cache) Count() int {
+func (c *cache) Count() int {
 	return c.store.Count()
 }
 
-func (c *Cache) GetStat() *stat {
+func (c *cache) GetStat() *stat {
 	c.stat.CacheCount = c.Count()
 	return &c.stat
 }

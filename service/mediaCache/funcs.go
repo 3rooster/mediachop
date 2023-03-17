@@ -12,7 +12,7 @@ type Config struct {
 
 func NewCache(cfg *Config) *CacheGroup {
 	c := &CacheGroup{
-		group:            map[uint64]*Cache{},
+		group:            map[uint64]*cache{},
 		stat:             stat{},
 		clearIntervalSec: cfg.ClearIntervalSec,
 		defaultTTLMs:     int64(cfg.DefaultTTLSec) * 1000,
@@ -23,7 +23,7 @@ func NewCache(cfg *Config) *CacheGroup {
 		c.shards = uint64(cfg.Shards)
 	}
 	for i := uint64(0); i < c.shards; i++ {
-		c.group[i] = &Cache{
+		c.group[i] = &cache{
 			store:        syncMap.Map[string, *cacheItem]{},
 			stat:         stat{},
 			defaultTTLMs: c.defaultTTLMs,
