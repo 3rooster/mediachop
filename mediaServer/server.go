@@ -35,6 +35,7 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		Event:         event,
 		Stream:        stream,
 		FileName:      fileName,
+		StreamKey:     event + "/" + stream,
 		RcvDateTimeMs: tm.UnixMillionSeconds(),
 		RcvDateTime:   tm.NowDateTime(),
 		IsPlaylist:    strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),

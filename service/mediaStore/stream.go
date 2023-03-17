@@ -6,10 +6,12 @@ import (
 )
 
 type MediaFile struct {
-	Path       string
-	Event      string
-	Stream     string
-	FileName   string
+	Path     string
+	Event    string
+	Stream   string
+	FileName string
+
+	StreamKey  string
 	IsPlaylist bool
 
 	RcvDateTime         string
@@ -22,10 +24,6 @@ type MediaFile struct {
 
 func (m *MediaFile) CacheKey() string {
 	return m.Path
-}
-
-func (m *MediaFile) StreamKey() string {
-	return m.Event + m.Stream
 }
 
 func ParseStreamInfoFromPath(path string) (event, stream, fileName string, err error) {
