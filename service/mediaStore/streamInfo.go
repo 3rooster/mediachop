@@ -36,7 +36,7 @@ func (sc *streamStore) GetStreamInfo(mf *MediaFile) *Stream {
 		streamKey: mf.StreamKey(),
 	}
 	cachedStream.SetLogger(
-		zap.L().With(zap.String("cache", "stream"),
+		zap.L().With(zap.String("cache", "stream_cache"),
 			zap.String("stream", mf.StreamKey())))
 	sc.cache.SetEx(mf.StreamKey(), cachedStream, ttlMs)
 	return cachedStream
