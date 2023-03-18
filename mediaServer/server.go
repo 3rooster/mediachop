@@ -43,6 +43,9 @@ func streamHandler(w http.ResponseWriter, r *http.Request) {
 		RcvDateTime:   tm.NowDateTime(),
 		IsPlaylist:    strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),
 	}
+	if !mf.IsPlaylist {
+		mf.IsInitFile = strings.HasSuffix(fileName, "init.mp4")
+	}
 	sf := mediaStore.GetStreamInfo(mf)
 	switch r.Method {
 	case http.MethodGet:

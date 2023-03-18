@@ -27,8 +27,11 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaF
 	mf.PublishedDateTimeMs = tm.UnixMillionSeconds()
 	mf.PublishedDateTime = tm.NowDateTime()
 	mf.PublishCostMs = mf.PublishedDateTimeMs - mf.RcvDateTimeMs
-
-	sf.Set(mf.CacheKey(), mf)
+	if mf.IsInitFile {
+		sf.SetEx(mf.CacheKey(), mf, 7*24*3600*1000)
+	} else {
+		sf.Set(mf.CacheKey(), mf)
+	}
 	logger.With(zap.Int64("cost", cs.CostMs()),
 		zap.Int64("bytes", bn)).
 		Info("publish success")

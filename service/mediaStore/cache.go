@@ -11,7 +11,7 @@ var store *streamStore
 // Init init cache
 func Init() {
 	store = &streamStore{
-		cache:            cache.NewCache(60*1000, false),
+		cache:            cache.NewCache(5*60*1000, false),
 		streamInfoLock:   sync.Mutex{},
 		clearIntervalSec: 10,
 	}

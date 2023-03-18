@@ -14,6 +14,7 @@ type MediaFile struct {
 
 	StreamKey  string
 	IsPlaylist bool
+	IsInitFile bool
 
 	RcvDateTime         string
 	RcvDateTimeMs       int64
