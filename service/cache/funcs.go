@@ -12,7 +12,7 @@ var Default = NewCache(&Config{
 
 type Config struct {
 	ClearIntervalMs int64 `yaml:"clear_interval_ms"`
-	DefaultTTLMs    int64 `yaml:"cache_ttl_ms"`
+	DefaultTTLMs    int64 `yaml:"default_ttl_ms"`
 	Shards          int   `yaml:"shards"`
 }
 

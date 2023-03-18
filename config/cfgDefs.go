@@ -20,9 +20,9 @@ type MediaServerConfig struct {
 }
 
 type cacheConfig struct {
-	Cache     *cache.Config `yaml:"cache"`
-	Stream    *cache.Config `yaml:"stream"`
-	MediaFile *cache.Config `yaml:"media_file"`
+	CommonCache *cache.Config `yaml:"common"`
+	Stream      *cache.Config `yaml:"stream"`
+	MediaFile   *cache.Config `yaml:"media_file"`
 }
 
 type cfg struct {

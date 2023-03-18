@@ -20,7 +20,7 @@ func initDepends() {
 func main() {
 	initDepends()
 	defer zap.L().Sync()
-	cache.InitDefault(config.Cache.Cache)
+	cache.InitDefault(config.Cache.CommonCache)
 	mediaStore.Init(config.Cache.Stream, config.Cache.MediaFile)
 	mediaServer.Start(config.MediaServer)
 }

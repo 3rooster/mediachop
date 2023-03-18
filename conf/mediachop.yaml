@@ -13,6 +13,13 @@ logger_rotation:
 mediaServer:
   listenPort: 8080
 cache:
-  cache_ttl_sec: 60
-  clear_interval_sec: 60
-  verbose: false
+  common:
+    clear_interval_ms: 5000
+    default_ttl_ms: 5000
+    shards: 8
+  stream:
+    clear_interval_ms: 300000
+    default_ttl_ms: 300000
+  media_file:
+    clear_interval_ms: 60000
+    default_ttl_ms: 300000

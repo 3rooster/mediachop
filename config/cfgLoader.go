@@ -13,7 +13,7 @@ var MediaServer *MediaServerConfig
 var Env *env
 
 var Cache = &cacheConfig{
-	Cache: &cache.Config{
+	CommonCache: &cache.Config{
 		ClearIntervalMs: 5000,
 		DefaultTTLMs:    5000,
 		Shards:          8,
@@ -56,8 +56,8 @@ func LoadConfig(path string) error {
 	}
 	Env = config.Env
 	MediaServer = config.Server
-	if config.CacheCfg != nil && config.CacheCfg.Cache != nil {
-		Cache.Cache = config.CacheCfg.Cache
+	if config.CacheCfg != nil && config.CacheCfg.CommonCache != nil {
+		Cache.CommonCache = config.CacheCfg.CommonCache
 	}
 	if config.CacheCfg != nil && config.CacheCfg.Stream != nil {
 		Cache.Stream = config.CacheCfg.Stream
