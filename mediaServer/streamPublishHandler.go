@@ -1,6 +1,7 @@
 package mediaServer
 
 import (
+	"bytes"
 	"go.uber.org/zap"
 	"io"
 	"mediachop/helpers/tm"
@@ -16,7 +17,9 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaF
 		zap.String("stream", mf.Stream),
 		zap.String("file", mf.FileName))
 	cs := cost.NewCost()
-	bn, e := io.Copy(mf.Content, r.Body)
+
+	bw := bytes.NewBuffer([]byte{})
+	bn, e := io.Copy(bw, r.Body)
 	if e != nil {
 		w.WriteHeader(502)
 		w.Write([]byte(e.Error()))
@@ -24,6 +27,7 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaF
 			Error("error on read content, err=", zap.Error(e))
 		return
 	}
+	mf.Content = bw.Bytes()
 	mf.PublishedDateTimeMs = tm.UnixMillionSeconds()
 	mf.PublishedDateTime = tm.NowDateTime()
 	mf.PublishCostMs = mf.PublishedDateTimeMs - mf.RcvDateTimeMs

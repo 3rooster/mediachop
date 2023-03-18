@@ -1,6 +1,7 @@
 package mediaServer
 
 import (
+	"bytes"
 	"go.uber.org/zap"
 	"mediachop/helpers/tm"
 	"mediachop/service/cost"
@@ -38,14 +39,15 @@ func playStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile
 	} else {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 	}
-	bn, err := w.Write(cachedMf.Content.Bytes())
+	br := bytes.NewReader(cachedMf.Content)
+	bn, err := br.WriteTo(w)
 	if err != nil {
 		logger.With(zap.Int64("cost", cs.CostMs())).
 			Error("play failed on write to client, err=", zap.Error(err))
 	} else {
 		logger.With(
 			zap.Int64("cost", cs.CostMs()),
-			zap.Int("bytes", bn),
+			zap.Int64("bytes", bn),
 		).Info("play success")
 	}
 }
