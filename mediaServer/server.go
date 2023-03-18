@@ -6,6 +6,7 @@ import (
 	"mediachop/helpers/tm"
 	"mediachop/service/mediaStore"
 	"net/http"
+	_ "net/http/pprof"
 	"strconv"
 	"strings"
 )
