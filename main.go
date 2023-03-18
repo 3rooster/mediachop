@@ -4,6 +4,7 @@ import (
 	"go.uber.org/zap"
 	"mediachop/config"
 	"mediachop/mediaServer"
+	"mediachop/service/cache"
 	"mediachop/service/mediaStore"
 	"os"
 )
@@ -19,6 +20,7 @@ func initDepends() {
 func main() {
 	initDepends()
 	defer zap.L().Sync()
-	mediaStore.Init()
+	cache.InitDefault(config.Cache.Cache)
+	mediaStore.Init(config.Cache.Stream, config.Cache.MediaFile)
 	mediaServer.Start(config.MediaServer)
 }

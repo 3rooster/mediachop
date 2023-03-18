@@ -14,19 +14,19 @@ var Env *env
 
 var Cache = &cacheConfig{
 	Cache: &cache.Config{
-		ClearIntervalSec: 5,
-		DefaultTTLSec:    5,
-		Shards:           8,
+		ClearIntervalMs: 5000,
+		DefaultTTLMs:    5000,
+		Shards:          8,
 	},
 	Stream: &cache.Config{
-		ClearIntervalSec: 60,
-		DefaultTTLSec:    300,
-		Shards:           1,
+		ClearIntervalMs: 60 * 1000,
+		DefaultTTLMs:    300 * 1000,
+		Shards:          1,
 	},
 	MediaFile: &cache.Config{
-		ClearIntervalSec: 10,
-		DefaultTTLSec:    60,
-		Shards:           1,
+		ClearIntervalMs: 10 * 1000,
+		DefaultTTLMs:    60 * 1000,
+		Shards:          1,
 	},
 }
 

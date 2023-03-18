@@ -9,18 +9,18 @@ import (
 
 var store *streamStore
 
-// Init init streams
-func Init() {
+// Init init fileCache
+func Init(streamCfg *cache.Config, mediaFileCfg *cache.Config) {
 	store = &streamStore{
-		streams:           cache.NewBucket(config.Cache.Stream.DefaultTTLSec),
-		streamInfoLock:    sync.Mutex{},
-		clearIntervalSec:  10,
-		defaultCacheTTLMS: config.Cache.Stream.DefaultTTLSec * 1000,
+		fileCache:      cache.NewBucket(config.Cache.Stream.DefaultTTLMs),
+		streamInfoLock: sync.Mutex{},
+		streamCfg:      streamCfg,
+		mediaFileCfg:   mediaFileCfg,
 	}
-	store.streams.SetLogger(zap.L().With(zap.String("streams", "stream_store")))
+	store.fileCache.SetLogger(zap.L().With(zap.String("fileCache", "stream_store")))
 	go store.runClean()
 }
 
-func GetStreamInfo(mf *MediaFile) *Stream {
+func GetStreamInfo(mf *MediaFile) *MediaFileCache {
 	return store.GetStreamInfo(mf)
 }

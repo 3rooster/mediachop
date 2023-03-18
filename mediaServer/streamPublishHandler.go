@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile, sf *mediaStore.Stream) {
+func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile, sf *mediaStore.MediaFileCache) {
 	logger := zap.L().With(
 		zap.String("mod", "publish"),
 		zap.String("event", mf.Event),

@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-func playStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile, sf *mediaStore.Stream) {
+func playStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaFile, sf *mediaStore.MediaFileCache) {
 	logger := zap.L().With(
 		zap.String("mod", "play"),
 		zap.String("event", mf.Event),

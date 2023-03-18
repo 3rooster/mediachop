@@ -15,8 +15,8 @@ type Bucket struct {
 
 func (c *Bucket) Set(key string, value any) {
 	c.SetEx(key, value, c.defaultTTLMs)
-
 }
+
 func (c *Bucket) SetEx(key string, value any, ttlMs int64) {
 	c.stat.SetTimes++
 	item := cacheItemPool.Get()

@@ -7,15 +7,15 @@ import (
 )
 
 type Cache struct {
-	group            map[uint64]*Bucket
-	shards           uint64
-	stat             stat
-	clearIntervalSec int64
-	defaultTTLMs     int64
-	logger           *zap.Logger
+	group           map[uint64]*Bucket
+	shards          uint64
+	stat            stat
+	clearIntervalMs int64
+	defaultTTLMs    int64
+	logger          *zap.Logger
 }
 
-func (c *Cache) getShardCache(key string) *Bucket {
+func (c *Cache) getBucket(key string) *Bucket {
 	h := fnv.New64()
 	h.Write([]byte(key))
 	return c.group[h.Sum64()%c.shards]
@@ -23,31 +23,31 @@ func (c *Cache) getShardCache(key string) *Bucket {
 
 // Set CacheBucket use default ttl
 func (c *Cache) Set(key string, value any) {
-	c.getShardCache(key).SetEx(key, value, c.defaultTTLMs)
+	c.getBucket(key).SetEx(key, value, c.defaultTTLMs)
 }
 
 // SetEx set with ttl ms
 func (c *Cache) SetEx(key string, value any, ttlMs int64) {
-	c.getShardCache(key).SetEx(key, value, ttlMs)
+	c.getBucket(key).SetEx(key, value, ttlMs)
 }
 
 // TTL set key ttl
 func (c *Cache) TTL(key string, ttlMs int64) (data any, exist bool) {
-	return c.getShardCache(key).TTL(key, ttlMs)
+	return c.getBucket(key).TTL(key, ttlMs)
 }
 
 func (c *Cache) GetCacheItem(key string) *Item {
-	return c.getShardCache(key).GetCacheItem(key)
+	return c.getBucket(key).GetCacheItem(key)
 }
 
 // Get get value of key
 func (c *Cache) Get(key string) (data any, expired bool) {
-	return c.getShardCache(key).Get(key)
+	return c.getBucket(key).Get(key)
 }
 
 // Delete delete key
 func (c *Cache) Delete(key string) bool {
-	return c.getShardCache(key).Delete(key)
+	return c.getBucket(key).Delete(key)
 }
 
 // SetLogger set logger
@@ -70,7 +70,7 @@ func (c *Cache) runClear() {
 		}
 		c.printStatToLog()
 		c.stat.clearHitAndMissStat()
-		time.Sleep(time.Second * time.Duration(c.clearIntervalSec))
+		time.Sleep(time.Millisecond * time.Duration(c.clearIntervalMs))
 	}
 }
 

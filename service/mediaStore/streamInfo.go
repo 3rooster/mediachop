@@ -8,51 +8,51 @@ import (
 	"time"
 )
 
-type Stream struct {
+type MediaFileCache struct {
 	*cache.Bucket
 	streamKey string
 }
 
 type streamStore struct {
-	streams           *cache.Bucket
-	streamInfoLock    sync.Mutex
-	clearIntervalSec  int
-	defaultCacheTTLMS int64
+	fileCache      *cache.Bucket
+	streamInfoLock sync.Mutex
+	streamCfg      *cache.Config
+	mediaFileCfg   *cache.Config
 }
 
-func (sc *streamStore) GetStreamInfo(mf *MediaFile) *Stream {
-	if stream, o := sc.streams.TTL(mf.StreamKey, sc.defaultCacheTTLMS); o {
-		cachedStream := stream.(*Stream)
+func (sc *streamStore) GetStreamInfo(mf *MediaFile) *MediaFileCache {
+	if stream, o := sc.fileCache.TTL(mf.StreamKey, sc.streamCfg.DefaultTTLMs); o {
+		cachedStream := stream.(*MediaFileCache)
 		return cachedStream
 	}
 	sc.streamInfoLock.Lock()
 	defer sc.streamInfoLock.Unlock()
-	if stream, o := sc.streams.TTL(mf.StreamKey, sc.defaultCacheTTLMS); o {
-		cachedStream := stream.(*Stream)
+	if stream, o := sc.fileCache.TTL(mf.StreamKey, sc.streamCfg.DefaultTTLMs); o {
+		cachedStream := stream.(*MediaFileCache)
 		return cachedStream
 	}
-	cachedStream := &Stream{
-		Bucket:    cache.NewBucket(config.Cache.MediaFile.DefaultTTLSec * 1000),
+	stream := &MediaFileCache{
+		Bucket:    cache.NewBucket(sc.mediaFileCfg.DefaultTTLMs),
 		streamKey: mf.StreamKey,
 	}
-	logger := zap.L().With(zap.String("streams", "stream_cache"),
+	logger := zap.L().With(zap.String("fileCache", "stream_cache"),
 		zap.String("stream", mf.StreamKey))
 	logger.Info("new_stream_cache")
-	cachedStream.SetLogger(logger)
-	sc.streams.SetEx(mf.StreamKey, cachedStream, config.Cache.Stream.DefaultTTLSec*1000)
-	return cachedStream
+	stream.SetLogger(logger)
+	sc.fileCache.SetEx(mf.StreamKey, stream, config.Cache.Stream.DefaultTTLMs)
+	return stream
 }
 
 func (sc *streamStore) runClean() {
 	for {
-		sc.streams.Range(func(key string, v *cache.Item) bool {
-			ca := v.Data.(*Stream)
+		sc.fileCache.Range(func(key string, v *cache.Item) bool {
+			ca := v.Data.(*MediaFileCache)
 			ca.Clear()
 			ca.PrintStatToLog()
 			return true
 		})
-		sc.streams.Clear()
-		time.Sleep(time.Duration(sc.clearIntervalSec) * time.Second)
+		sc.fileCache.Clear()
+		time.Sleep(time.Duration(sc.streamCfg.DefaultTTLMs) * time.Millisecond)
 	}
 
 }
