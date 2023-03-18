@@ -5,17 +5,17 @@ import (
 )
 
 type Config struct {
-	ClearIntervalSec int `yaml:"clear_interval_sec"`
-	DefaultTTLSec    int `yaml:"cache_ttl_sec"`
-	Shards           int `yaml:"shards"`
+	ClearIntervalSec int64 `yaml:"clear_interval_sec"`
+	DefaultTTLSec    int64 `yaml:"cache_ttl_sec"`
+	Shards           int   `yaml:"shards"`
 }
 
-func NewCacheGroup(cfg *Config) *Group {
-	c := &Group{
-		group:            map[uint64]*Cache{},
+func NewCacheGroup(cfg *Config) *Cache {
+	c := &Cache{
+		group:            map[uint64]*Bucket{},
 		stat:             stat{},
 		clearIntervalSec: cfg.ClearIntervalSec,
-		defaultTTLMs:     int64(cfg.DefaultTTLSec) * 1000,
+		defaultTTLMs:     cfg.DefaultTTLSec * 1000,
 		shards:           uint64(cfg.Shards),
 	}
 	if c.shards <= 0 || c.shards > 512 {
@@ -28,14 +28,14 @@ func NewCacheGroup(cfg *Config) *Group {
 		c.clearIntervalSec = 10
 	}
 	for i := uint64(0); i < c.shards; i++ {
-		c.group[i] = NewCache(c.defaultTTLMs, false)
+		c.group[i] = NewBucket(c.defaultTTLMs)
 	}
 	go c.runClear()
 	return c
 }
 
-func NewCache(defaultTTLMS int64, runClean bool) *Cache {
-	r := &Cache{
+func NewBucket(defaultTTLMS int64) *Bucket {
+	r := &Bucket{
 		store:        syncMap.Map[string, *Item]{},
 		stat:         stat{},
 		defaultTTLMs: defaultTTLMS,

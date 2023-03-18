@@ -12,16 +12,22 @@ import (
 var MediaServer *MediaServerConfig
 var Env *env
 
-var Cache = &cache.Config{
-	ClearIntervalSec: 30,
-	DefaultTTLSec:    10,
-	Shards:           8,
-}
-
-var StreamCache = &cache.Config{
-	ClearIntervalSec: 30,
-	DefaultTTLSec:    10,
-	Shards:           2,
+var Cache = &cacheConfig{
+	Cache: &cache.Config{
+		ClearIntervalSec: 5,
+		DefaultTTLSec:    5,
+		Shards:           8,
+	},
+	Stream: &cache.Config{
+		ClearIntervalSec: 60,
+		DefaultTTLSec:    300,
+		Shards:           1,
+	},
+	MediaFile: &cache.Config{
+		ClearIntervalSec: 10,
+		DefaultTTLSec:    60,
+		Shards:           1,
+	},
 }
 
 func init() {
@@ -50,11 +56,14 @@ func LoadConfig(path string) error {
 	}
 	Env = config.Env
 	MediaServer = config.Server
-	if config.CacheCfg != nil {
-		Cache = config.CacheCfg
+	if config.CacheCfg != nil && config.CacheCfg.Cache != nil {
+		Cache.Cache = config.CacheCfg.Cache
 	}
-	if config.StreamCache != nil {
-		StreamCache = config.StreamCache
+	if config.CacheCfg != nil && config.CacheCfg.Stream != nil {
+		Cache.Stream = config.CacheCfg.Stream
+	}
+	if config.CacheCfg != nil && config.CacheCfg.MediaFile != nil {
+		Cache.MediaFile = config.CacheCfg.MediaFile
 	}
 	return processLogCfg(config.Logger, config.RotationConfig)
 }

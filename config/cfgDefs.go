@@ -19,11 +19,16 @@ type MediaServerConfig struct {
 	MaxCacheSize int `yaml:"maxCacheSize"` // mb
 }
 
+type cacheConfig struct {
+	Cache     *cache.Config `yaml:"cache"`
+	Stream    *cache.Config `yaml:"stream"`
+	MediaFile *cache.Config `yaml:"media_file"`
+}
+
 type cfg struct {
 	Env            *env               `yaml:"env"`
 	Server         *MediaServerConfig `yaml:"mediaServer"`
 	Logger         *zap.Config        `yaml:"logger"`
 	RotationConfig *lumberjack.Logger `yaml:"logger_rotation"`
-	CacheCfg       *cache.Config      `yaml:"cache"`
-	StreamCache    *cache.Config      `yaml:"stream_cache"`
+	CacheCfg       *cacheConfig       `yaml:"cache"`
 }

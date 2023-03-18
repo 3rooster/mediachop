@@ -9,49 +9,49 @@ import (
 )
 
 type Stream struct {
-	*cache.Cache
+	*cache.Bucket
 	streamKey string
 }
 
 type streamStore struct {
-	cache            *cache.Cache
-	streamInfoLock   sync.Mutex
-	clearIntervalSec int
+	streams           *cache.Bucket
+	streamInfoLock    sync.Mutex
+	clearIntervalSec  int
+	defaultCacheTTLMS int64
 }
 
 func (sc *streamStore) GetStreamInfo(mf *MediaFile) *Stream {
-	ttlMs := 5 * 60 * int64(1000)
-	if stream, o := sc.cache.TTL(mf.StreamKey, ttlMs); o {
+	if stream, o := sc.streams.TTL(mf.StreamKey, sc.defaultCacheTTLMS); o {
 		cachedStream := stream.(*Stream)
 		return cachedStream
 	}
 	sc.streamInfoLock.Lock()
 	defer sc.streamInfoLock.Unlock()
-	if stream, o := sc.cache.TTL(mf.StreamKey, ttlMs); o {
+	if stream, o := sc.streams.TTL(mf.StreamKey, sc.defaultCacheTTLMS); o {
 		cachedStream := stream.(*Stream)
 		return cachedStream
 	}
 	cachedStream := &Stream{
-		Cache:     cache.NewCache(int64(config.StreamCache.DefaultTTLSec)*1000, false),
+		Bucket:    cache.NewBucket(config.Cache.MediaFile.DefaultTTLSec * 1000),
 		streamKey: mf.StreamKey,
 	}
-	logger := zap.L().With(zap.String("cache", "stream_cache"),
+	logger := zap.L().With(zap.String("streams", "stream_cache"),
 		zap.String("stream", mf.StreamKey))
 	logger.Info("new_stream_cache")
 	cachedStream.SetLogger(logger)
-	sc.cache.SetEx(mf.StreamKey, cachedStream, ttlMs)
+	sc.streams.SetEx(mf.StreamKey, cachedStream, config.Cache.Stream.DefaultTTLSec*1000)
 	return cachedStream
 }
 
 func (sc *streamStore) runClean() {
 	for {
-		sc.cache.Range(func(key string, v *cache.Item) bool {
+		sc.streams.Range(func(key string, v *cache.Item) bool {
 			ca := v.Data.(*Stream)
 			ca.Clear()
 			ca.PrintStatToLog()
 			return true
 		})
-		sc.cache.Clear()
+		sc.streams.Clear()
 		time.Sleep(time.Duration(sc.clearIntervalSec) * time.Second)
 	}
 

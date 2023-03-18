@@ -21,5 +21,5 @@ func (s *stat) Print(logger *zap.Logger) {
 		zap.Int64("miss", s.Miss),
 		zap.Int("count", s.CacheCount),
 		zap.Int("expired_count", s.ExpiredCount),
-	).Info("Cache stat")
+	).Info("CacheBucket stat")
 }
