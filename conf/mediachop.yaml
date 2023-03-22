@@ -18,8 +18,8 @@ cache:
     default_ttl_ms: 5000
     shards: 8
   stream:
-    clear_interval_ms: 300000
+    clear_interval_ms: 3000
     default_ttl_ms: 300000
   media_file:
-    clear_interval_ms: 60000
-    default_ttl_ms: 300000
+    clear_interval_ms: 20000
+    default_ttl_ms: 3000

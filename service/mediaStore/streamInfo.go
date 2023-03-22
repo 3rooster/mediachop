@@ -52,7 +52,7 @@ func (sc *streamStore) runClean() {
 			return true
 		})
 		sc.fileCache.Clear()
-		time.Sleep(time.Duration(sc.streamCfg.DefaultTTLMs) * time.Millisecond)
+		time.Sleep(time.Duration(sc.streamCfg.ClearIntervalMs) * time.Millisecond)
 	}
 
 }

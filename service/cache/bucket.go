@@ -53,7 +53,11 @@ func (c *Bucket) Get(key string) (data any, expired bool) {
 func (c *Bucket) Delete(key string) bool {
 	if v, o := c.store.Load(key); o {
 		c.store.Delete(key)
-		cacheItemPool.Put(v)
+		if v != nil {
+			v.reset()
+			cacheItemPool.Put(v)
+		}
+
 		return true
 	}
 	return false
@@ -77,6 +81,7 @@ func (c *Bucket) Clear() {
 		v, _ := c.store.Load(k)
 		c.store.Delete(k)
 		if v != nil {
+			v.reset()
 			cacheItemPool.Put(v)
 		}
 	}

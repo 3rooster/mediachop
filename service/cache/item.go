@@ -15,7 +15,7 @@ type Item struct {
 }
 
 func (c *Item) reset() {
-	c.Data = nil
 	c.CreateTimeMs = 0
 	c.ExpiredTimeMs = 0
+	c.Data = nil
 }
