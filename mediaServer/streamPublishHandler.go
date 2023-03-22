@@ -18,7 +18,8 @@ func publishStream(w http.ResponseWriter, r *http.Request, mf *mediaStore.MediaF
 		zap.String("file", mf.FileName))
 	cs := cost.NewCost()
 
-	bw := bytes.NewBuffer([]byte{})
+	bw := bytes.NewBuffer(make([]byte, 20*1024*1024))
+	bw.Reset()
 	bn, e := io.Copy(bw, r.Body)
 	if e != nil {
 		w.WriteHeader(502)
