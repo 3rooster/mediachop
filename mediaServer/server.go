@@ -3,12 +3,10 @@ package mediaServer
 import (
 	"go.uber.org/zap"
 	"mediachop/config"
-	"mediachop/helpers/tm"
 	"mediachop/service/mediaStore"
 	"net/http"
 	_ "net/http/pprof"
 	"strconv"
-	"strings"
 )
 
 func Start(srvCfg *config.MediaServerConfig) {
@@ -24,29 +22,12 @@ func Start(srvCfg *config.MediaServerConfig) {
 func streamHandler(w http.ResponseWriter, r *http.Request) {
 	logger := zap.L().With(zap.String("method", r.Method),
 		zap.String("path", r.URL.String()))
-	event, stream, fileName, err := mediaStore.ParseStreamInfoFromPath(r.URL.Path)
+	code, err, mf, sf := mediaStore.ParseMediaFileRequest(r.URL.Path, logger)
 	if err != nil {
-		w.WriteHeader(401)
-		w.Write([]byte("path not support"))
-		logger.Error("path not support")
+		w.WriteHeader(code)
+		w.Write([]byte(err.Error()))
 		return
 	}
-
-	mf := &mediaStore.MediaFile{
-		Path:          r.URL.Path,
-		Event:         event,
-		Stream:        stream,
-		FileName:      fileName,
-		StreamKey:     event + "/" + stream,
-		Content:       nil,
-		RcvDateTimeMs: tm.UnixMillionSeconds(),
-		RcvDateTime:   tm.NowDateTime(),
-		IsPlaylist:    strings.HasSuffix(fileName, ".m3u8") || strings.HasSuffix(fileName, ".mpd"),
-	}
-	if !mf.IsPlaylist {
-		mf.IsInitFile = strings.HasSuffix(fileName, "init.mp4")
-	}
-	sf := mediaStore.GetStreamInfo(mf)
 	switch r.Method {
 	case http.MethodGet:
 		playStream(w, r, mf, sf)
